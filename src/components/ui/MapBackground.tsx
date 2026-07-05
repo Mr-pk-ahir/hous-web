@@ -56,7 +56,7 @@ export default function MapBackground({ active }: MapBackgroundProps) {
     return (
         <div className="absolute inset-0 w-full h-full overflow-hidden bg-gray-50 pointer-events-none flex justify-center items-center">
             
-            <div className="absolute inset-0 opacity-30 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:50px_50px]" />
+            <div className="absolute inset-0 opacity-30 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-size-[50px_50px]" />
 
             <svg 
                 className="absolute w-[2000px] h-[2000px] max-w-none" 

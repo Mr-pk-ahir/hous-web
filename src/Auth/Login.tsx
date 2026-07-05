@@ -1,5 +1,4 @@
 import { motion } from "motion/react";
-import bg from "../assets/uneekints life style.jpg";
 import { FaLock } from "react-icons/fa";
 // Tamara Input component no path barabar chhe te check kari lejo
 import Input from "../components/commen/Input";

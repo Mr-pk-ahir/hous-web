@@ -2,7 +2,6 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserPlus } from "react-icons/fa";
-import bg from "../assets/uneekints life style.jpg";
 
 // Components
 import Input from "../components/commen/Input";
