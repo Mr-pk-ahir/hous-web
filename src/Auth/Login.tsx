@@ -1,29 +1,54 @@
 import { motion } from "motion/react";
 import { FaLock } from "react-icons/fa";
-// Tamara Input component no path barabar chhe te check kari lejo
 import Input from "../components/commen/Input";
 import Button from "../components/commen/Button";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner"; // મેસેજ બતાવવા માટે
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
 
 export default function Login() {
-    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [email, setEmail] = useState<string>("");
 
-    const handleLogin = (e: any) => {
+    const [password, setPassword] = useState<string>("");
+    const [formError, setFormError] = useState<string>("");
+
+    const handleLogin = async (e: FormEvent) => {
         e.preventDefault();
-        setLoading(true); // Loading shuru thayu
+        setFormError("");
+        setLoading(true);
 
-        // API call ke fake delay (2 second no timeout check karva mate)
-        setTimeout(() => {
-            setLoading(false); // 2 second pachi loading bandh thai jashe
-        }, 2000);
+        try {
+            const res = await fetch(`${API_BASE_URL}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                setFormError(data.message || "Login failed");
+                toast.error(data.message || "Login failed");
+                return;
+            }
+
+            toast.success("Login Successful!");
+            setTimeout(() => {
+                navigate("/dashboard"); 
+            }, 1500);
+        } catch (error) {
+            toast.error("Server સાથે કનેક્ટ ન થઈ શકાયું: " + error);
+        } finally {
+            setLoading(false);
+        }
     };
-    return (
-        // Parent container: Image ne inline style thi set kari chhe
-        <motion.div
-            className="relative w-screen h-screen flex justify-center lg:justify-center lg:gap-16 items-center overflow-hidden"
 
-        >
+    return (
+        <motion.div className="relative w-screen h-screen flex justify-center lg:justify-center lg:gap-16 items-center overflow-hidden">
             <div className="absolute size-full bg-linear-to-r from-cyan-50 to-gray-50"></div>
 
             <motion.div
@@ -36,47 +61,59 @@ export default function Login() {
                     <div className="w-16 h-16 rounded-2xl flex justify-center items-center bg-yellow-500 shadow-lg shadow-yellow-500/50">
                         <FaLock size={26} className="text-white" />
                     </div>
-                    <h1 className="text-4xl text-gray-800 font-extrabold drop-shadow-md">
-                        Login
-                    </h1>
+                    <h1 className="text-4xl text-gray-800 font-extrabold drop-shadow-md">Login</h1>
                 </div>
 
                 {/* Form */}
                 <form className="w-full flex flex-col justify-center items-center gap-5" onSubmit={handleLogin}>
+                    {formError && (
+                        <div className="w-full text-xs font-bold px-2 p-2 rounded-md border text-red-600 bg-red-50/50 border-red-200">
+                            ⚠️ {formError}
+                        </div>
+                    )}
+
                     <div className="w-full">
-                        <Input type="email" placeholder="Email Address" />
+                        <Input 
+                            type="email" 
+                            placeholder="Email Address" 
+                            value={email}
+                            onChange={(e: any) => setEmail(e.target.value)}
+                            required
+                        />
                     </div>
 
                     <div className="w-full">
-                        <Input type="password" placeholder="Password" />
+                        <Input 
+                            type="password" 
+                            placeholder="Password" 
+                            value={password}
+                            onChange={(e: any) => setPassword(e.target.value)}
+                            required
+                        />
                     </div>
 
-                    {/* Login Button (Tamari jaruriyat mujab sudhari shako chho) */}
                     <Button type="submit" isLoading={loading}>
                         Sign In
                     </Button>
-                    <div className={`w-full flex justify-center items-center`}>
-                        <p>You can create accoount <Link to={"/signup"} className={`text-blue-700`}> Sign up</Link></p>
+                    
+                    <div className="w-full flex justify-center items-center">
+                        <p className="text-gray-700 font-medium">
+                            Don't have an account? <Link to="/signup" className="text-blue-700 font-bold underline">Sign up</Link>
+                        </p>
                     </div>
                 </form>
             </motion.div>
 
-            {/* Blank/Info Box (Right Side - Only visible on large screens) */}
+            {/* Info Box */}
             <motion.div
-                className="relative z-10 hidden lg:flex flex-col justify-center items-center w-120 xl:w-160 h-140    border-2 border-white/30 backdrop-blur-md bg-black/20 rounded-3xl p-10 shadow-2xl"
+                className="relative z-10 hidden lg:flex flex-col justify-center items-center w-120 xl:w-160 h-140 border-2 border-white/30 backdrop-blur-md bg-black/20 rounded-3xl p-10 shadow-2xl"
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
             >
-                {/* Tame ahiya logo ke koi text add kari shako chho */}
-                <h2 className="text-4xl font-bold text-white mb-4 drop-shadow-lg text-center">
-                    Welcome Back!
-                </h2>
-                <p className="text-white/80 text-lg text-center">
-                    Discover the unique lifestyle with us.
-                </p>
+                <h2 className="text-4xl font-bold text-white mb-4 drop-shadow-lg text-center">Welcome Back!</h2>
+                <p className="text-white/80 text-lg text-center">Discover the unique lifestyle with us.</p>
             </motion.div>
-
         </motion.div>
     );
 }
